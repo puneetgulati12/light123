@@ -1,21 +1,23 @@
 package com.example.light;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
+import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -84,20 +86,29 @@ public class MainActivity extends AppCompatActivity {
                 final String myResponse = response.body().string();
                 Log.d("response",myResponse);
 //                final String result = response.body().string();
-                String resut =myResponse != null ? myResponse.toString() : null;
+                String resut = myResponse;
                 Gson gson = new Gson();
 
-                Type listType = new TypeToken<>().getType();
+                for (int i = 0; i <data.size() ; i++) {
+                    insert("Month" , "count" , "vismedian"  , "Year" );
+                }
 
-                final ArrayList light =  gson.fromJson(resut , listType);
+//                Type listType = new TypeToken<>().getType();
+//
+//                final ArrayList light =  gson.fromJson(resut , listType);
 
+                final lightclass[] arr = gson.fromJson(resut , lightclass[].class);
 
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         RecyclerView recyclerView = findViewById(R.id.recycler);
-                        recyclerView.setLayoutManager((RecyclerView.LayoutManager)(new LinearLayoutManager(MainActivity.this.getBaseContext())));
-                        recyclerView.setAdapter(new Lightadapter(new ArrayList<lightclass>(),MainActivity.this));
+                        recyclerView.setLayoutManager((new LinearLayoutManager(MainActivity.this.getBaseContext())));
+                        recyclerView.setAdapter(new Lightadapter (
+
+                                new ArrayList<>(Arrays.asList(arr))
+
+                                ,MainActivity.this));
                     }
                 });
 
@@ -108,6 +119,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+public boolean insert(String Month , String count , String VisMedian , String Year){
+//    SQLiteDatabase sqLiteDatabase = database.getInstance(this).getWritableDatabase();
+    SQLiteDatabase sqLiteDatabase = new database(this).getWritableDatabase();
+    ContentValues contentValues = new ContentValues();
+    contentValues.put("Month" ,9);
+    contentValues.put("Year" ,89);
+    contentValues.put("count" ,90);
+    contentValues.put("vismedian" ,5677);
+    long newRow = sqLiteDatabase.insert("satellite"  , null , contentValues);
+    Toast.makeText(this, "The new Row Id is " + newRow, Toast.LENGTH_LONG).show();
+    return true;
+}
 
 
 }
