@@ -14,20 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class database extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "postsDatabase";
+    private static final String DATABASE_NAME = "LightDatabase";
     private static final int DATABASE_VERSION = 1;
+    //table names
+    private static final String TABLE_KEY = "key2";
+    private static final String TABLE_SATELLITE = "Satellite";
 
-    private static final String TABLE_POSTS = "posts";
-    private static final String TABLE_USERS = "users";
-
-
-    private static final String KEY_POST_ID = "id";
-    private static final String KEY_POST_USER_ID_FK = "userId";
-    private static final String KEY_POST_TEXT = "text";
-
-    private static final String KEY_USER_ID = "id";
-    private static final String KEY_USER_NAME = "userName";
-    private static final String KEY_USER_PROFILE_PICTURE_URL = "profilePictureUrl";
+//table columns
+    private static final String TABLE_KEY_ID = "district";
+    private static final String KEY_VALUE = "value";
+     //    private static final String KEY_POST_TEXT = "text";
+     //user table columns
+    private static final String KEY_SAT_MON = "Month";
+    private static final String KEY_SAT_VIS = "VisMedian";
+    private static final String KEY_SAT_COU = "count";
+    private static final String KEY_SAT_YEAR = "Year";
     private static final String TAG = "";
 
 
@@ -56,18 +57,18 @@ public class database extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        String CREATE_POSTS_TABLE = "CREATE TABLE " + TABLE_POSTS +
+        String CREATE_POSTS_TABLE = "CREATE TABLE " + TABLE_KEY +
                 "(" +
-                KEY_POST_ID + " INTEGER PRIMARY KEY," + // Define a primary key
-                KEY_POST_USER_ID_FK + " INTEGER REFERENCES " + TABLE_USERS + "," + // Define a foreign key
-                KEY_POST_TEXT + " TEXT" +
+
+                TABLE_KEY_ID + " TEXT, " + // Define a primary key
+                KEY_VALUE + " TEXT" +
                 ")";
 
-        String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS +
+        String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_SATELLITE +
                 "(" +
-                KEY_USER_ID + " INTEGER PRIMARY KEY," +
-                KEY_USER_NAME + " TEXT," +
-                KEY_USER_PROFILE_PICTURE_URL + " TEXT" +
+                KEY_SAT_MON + " TEXT," +
+                KEY_SAT_COU + " TEXT," +
+                KEY_SAT_VIS + " TEXT," + KEY_SAT_YEAR + " TEXT" +
                 ")";
 
         sqLiteDatabase.execSQL(CREATE_POSTS_TABLE);
@@ -80,8 +81,8 @@ public class database extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldversion, int newversion) {
 
         if (oldversion != newversion) {
-            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTS);
-            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_KEY);
+            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_SATELLITE);
             onCreate(sqLiteDatabase);
         }
 
@@ -89,16 +90,18 @@ public class database extends SQLiteOpenHelper {
 
     public void addpost(Post post) {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+
         sqLiteDatabase.beginTransaction();
 
 
         long userId = addOrUpdateUser(post.user);
         ContentValues values = new ContentValues();
+//        sqLiteDatabase.insert("Satellite" , null , values);
 
-        values.put(KEY_POST_USER_ID_FK, userId);
-        values.put(KEY_POST_TEXT, post.text);
+        values.put(TABLE_KEY_ID, userId);
+        values.put(KEY_VALUE, post.text);
 
-        sqLiteDatabase.insertOrThrow(TABLE_POSTS, null, values);
+        sqLiteDatabase.insertOrThrow(TABLE_KEY, null, values);
         sqLiteDatabase.setTransactionSuccessful();
     }
 
@@ -110,20 +113,23 @@ public class database extends SQLiteOpenHelper {
 
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_USER_NAME, user.username);
-        contentValues.put(KEY_USER_PROFILE_PICTURE_URL, user.ProfilePictureUrl);
+        contentValues.put(KEY_SAT_MON, user.Month);
+        contentValues.put(KEY_SAT_COU, user.count);
+        contentValues.put(KEY_SAT_YEAR, user.year);
+        contentValues.put(KEY_SAT_VIS, user.VisMedian);
+//        contentValues.put(KEY_USER_PROFILE_PICTURE_URL, user.ProfilePictureUrl);
 
         // First update the user in case the user already exists in the database
 
-        int rows = sqLiteDatabase.update(TABLE_USERS, contentValues,
-                KEY_USER_NAME
-                        + "?", new String[]{user.username});
+        int rows = sqLiteDatabase.update(TABLE_SATELLITE, contentValues,
+                KEY_SAT_COU
+                        + "?", new String[]{user.count});
 
         // Check if update succeeded
         if (rows == 1) {
-            String usersSelectQuery = String.format("SELECT %s FROM %s WHERE %s = ?", KEY_USER_ID, TABLE_USERS, KEY_USER_NAME);
+            String usersSelectQuery = String.format("SELECT %s FROM %s WHERE %s = ?", KEY_SAT_COU, TABLE_SATELLITE, KEY_SAT_COU);
 
-            Cursor cursor = sqLiteDatabase.rawQuery(usersSelectQuery, new String[]{String.valueOf(user.username)});
+            Cursor cursor = sqLiteDatabase.rawQuery(usersSelectQuery, new String[]{String.valueOf(user.count)});
 
             if (cursor.moveToFirst()) {
                 userId = cursor.getInt(0);
@@ -134,7 +140,7 @@ public class database extends SQLiteOpenHelper {
                 cursor.close();
             }
         } else {
-            userId = sqLiteDatabase.insertOrThrow(TABLE_USERS, null, contentValues);
+            userId = sqLiteDatabase.insertOrThrow(TABLE_SATELLITE, null, contentValues);
             sqLiteDatabase.setTransactionSuccessful();
         }
 
@@ -149,8 +155,10 @@ public class database extends SQLiteOpenHelper {
     }
 
     public class User {
-        public String username;
-        public String ProfilePictureUrl;
+        public String count;
+        public String year;
+        public String Month;
+        public String VisMedian;
     }
 
     // Get all posts in the database
@@ -159,10 +167,10 @@ public class database extends SQLiteOpenHelper {
 
         String POSTS_SELECT_QUERY =
                 String.format("SELECT * FROM %s LEFT OUTER JOIN %s ON %s.%s = %s.%s",
-                        TABLE_POSTS,
-                        TABLE_USERS,
-                        TABLE_POSTS, KEY_POST_USER_ID_FK,
-                        TABLE_USERS, KEY_USER_ID);
+                        TABLE_KEY,
+                        TABLE_SATELLITE,
+                        TABLE_KEY, KEY_VALUE,
+                        TABLE_SATELLITE, KEY_SAT_COU);
         // "getReadableDatabase()" and "getWriteableDatabase()" return the same object (except under low
         // disk space scenarios)
         SQLiteDatabase db = getReadableDatabase();
@@ -171,11 +179,14 @@ public class database extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     User newUser = new User();
-                    newUser.username = cursor.getString(cursor.getColumnIndex(KEY_USER_NAME));
-                    newUser.ProfilePictureUrl = cursor.getString(cursor.getColumnIndex(KEY_USER_PROFILE_PICTURE_URL));
+                    newUser.count = cursor.getString(cursor.getColumnIndex(KEY_SAT_COU));
+                    newUser.year = cursor.getString(cursor.getColumnIndex(KEY_SAT_YEAR));
+                    newUser.Month = cursor.getString(cursor.getColumnIndex(KEY_SAT_MON));
+                    newUser.VisMedian = cursor.getString(cursor.getColumnIndex(KEY_SAT_VIS));
+//                    newUser.ProfilePictureUrl = cursor.getString(cursor.getColumnIndex(KEY_USER_PROFILE_PICTURE_URL));
 
                     Post newPost = new Post();
-                    newPost.text = cursor.getString(cursor.getColumnIndex(KEY_POST_TEXT));
+//                    newPost.text = cursor.getString(cursor.getColumnIndex(KEY_POST_TEXT));
                     newPost.user = newUser;
                     posts.add(newPost);
                 } while(cursor.moveToNext());
@@ -191,16 +202,16 @@ public class database extends SQLiteOpenHelper {
         return posts;
     }
     // Update the user's profile picture url
-    public int updateUserProfilePicture(User user) {
-        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(KEY_USER_PROFILE_PICTURE_URL, user.ProfilePictureUrl);
-
-        // Updating profile picture url for user with that userName
-        return sqLiteDatabase.update(TABLE_USERS, contentValues, KEY_USER_NAME + " = ?",
-                new String[] { String.valueOf(user.username) });
-    }
+//    public int updateUserProfilePicture(User user) {
+//        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+//
+//        ContentValues contentValues = new ContentValues();
+//        contentValues.put(KEY_USER_PROFILE_PICTURE_URL, user.ProfilePictureUrl);
+//
+//        // Updating profile picture url for user with that userName
+//        return sqLiteDatabase.update(TABLE_USERS, contentValues, KEY_USER_NAME + " = ?",
+//                new String[] { String.valueOf(user.username) });
+//    }
 
     // Delete all posts and users in the database
     public void deleteAllPostsAndUsers() {
@@ -208,8 +219,8 @@ public class database extends SQLiteOpenHelper {
         sqLiteDatabase.beginTransaction();
         try {
             // Order of deletions is important when foreign key relationships exist.
-            sqLiteDatabase.delete(TABLE_POSTS, null, null);
-            sqLiteDatabase.delete(TABLE_USERS, null, null);
+            sqLiteDatabase.delete(TABLE_KEY, null, null);
+            sqLiteDatabase.delete(TABLE_SATELLITE, null, null);
             sqLiteDatabase.setTransactionSuccessful();
         } catch (Exception e) {
             Log.d(TAG, "Error occur while trying to delete all posts and users");

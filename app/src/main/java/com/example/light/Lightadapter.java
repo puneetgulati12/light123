@@ -4,11 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.LayoutInflaterFactory;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -45,24 +43,28 @@ View inflatedView = li.inflate(R.layout.item_row , parent ,false);
     @Override
     public void onBindViewHolder(@NonNull LightHolder holder, int position) {
         lightclass current = lightclass.get(position);
-        holder.cou.setText(current.getCount());
-        holder.sat.setText(current.getSatellite());
-        holder.vis.setText(current.getVis_median());
-
+        holder.cou.setText(String.valueOf(current.getCount()));
+        holder.sat.setText(String.valueOf(current.getSatellite()));
+        holder.vis.setText(String.valueOf(current.getVis_median()));
+        holder.mon.setText(String.valueOf(current.getMonth()));
+        holder.year.setText(String.valueOf(current.getYear()));
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         return lightclass.size();
     }
 class LightHolder extends  RecyclerView.ViewHolder{
-        private TextView sat , cou , vis;
+        private TextView sat , cou , vis ,mon , year ;
     public LightHolder(View itemView) {
             super(itemView);
 
             cou = itemView.findViewById(R.id.count);
             sat = itemView.findViewById(R.id.satellite);
             vis = itemView.findViewById(R.id.vis_median);
+            mon = itemView.findViewById(R.id.mon);
+            year = itemView.findViewById(R.id.year);
     }
 }
 
