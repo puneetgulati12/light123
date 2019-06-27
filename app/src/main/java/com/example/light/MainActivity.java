@@ -1,7 +1,10 @@
 package com.example.light;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,11 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.facebook.stetho.inspector.protocol.module.Database;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -129,11 +130,55 @@ public class MainActivity extends AppCompatActivity {
             contentValues.put("count", count);
             contentValues.put("vismedian", VisMedian);
             long newRow = sqLiteDatabase.insert("satellite", null, contentValues);
-//            Toast.makeText(this, "The new Row Id is " + newRow, Toast.LENGTH_LONG).show();
+
+//            contentValues.put("" , );
+//            sqLiteDatabase.insert("key2" , null , contentValues);
+           // Toast.makeText(this, "The new Row Id is " + newRow, Toast.LENGTH_LONG).show();
             return true;
         }
 
+        public boolean insert(String district, String value) {
+//    SQLiteDatabase sqLiteDatabase = database.getInstance(this).getWritableDatabase();
+        SQLiteDatabase sqLiteDatabase = new database(this).getWritableDatabase();
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("district", district);
+            contentValues.put("value", value);
+
+            sqLiteDatabase.insert("key2" , null , contentValues);
+           // Toast.makeText(this, "The new Row Id is " + newRow, Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        public void getdata () {
 
 
+//        final String TABLE_NAME = "";
+//
+//        String selectquery = "SELECT * FROM TABLE_KEY , TABLE_SATELLITE" ;
+//        SQLiteDatabase sqLiteDatabase = database.getInstance(this).getReadableDatabase();
+//            Cursor cursor = sqLiteDatabase.rawQuery(selectquery, null);
+//            String data[] = null;
+//
+//            if (cursor.moveToFirst()){
+//
+//            }
+//
+//            return  data;
+            boolean connected = false;
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+            if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+                //we are connected to a network
+                
+                connected = true;
+
+            } else {
+                connected = false;
+
+            }
+
+
+        }
     }
 
