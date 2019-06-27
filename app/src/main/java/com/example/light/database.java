@@ -15,7 +15,7 @@ import java.util.List;
 
 public class database extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "LightDatabase";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     //table names
     private static final String TABLE_KEY = "key2";
     private static final String TABLE_SATELLITE = "Satellite";
@@ -30,6 +30,7 @@ public class database extends SQLiteOpenHelper {
     private static final String KEY_SAT_COU = "count";
     private static final String KEY_SAT_YEAR = "Year";
     private static final String TAG = "";
+    private static final String _ID = "ID";
 
 
     private static database sInstance;
@@ -59,6 +60,8 @@ public class database extends SQLiteOpenHelper {
 
         String CREATE_POSTS_TABLE = "CREATE TABLE " + TABLE_KEY +
                 "(" +
+                 _ID
+                + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
                 TABLE_KEY_ID + " TEXT, " + // Define a primary key
                 KEY_VALUE + " TEXT" +
