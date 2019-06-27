@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<lightclass> data = new ArrayList<>();
     EditText editText;
+    private database dbhelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        getdata();
 
 //        RecyclerView rv = findViewById(R.id.recycler);
 //        rv.setLayoutManager(new LinearLayoutManager(this , LinearLayoutManager.HORIZONTAL ,false));
@@ -170,10 +172,17 @@ public class MainActivity extends AppCompatActivity {
             if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                     connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
                 //we are connected to a network
-
+                try {
+                    run();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 connected = true;
 
             } else {
+                String selectquery = "SELECT * FROM TABLE_KEY , TABLE_SATELLITE" ;
+        SQLiteDatabase sqLiteDatabase = database.getInstance(this).getReadableDatabase();
+            Cursor cursor = sqLiteDatabase.rawQuery(selectquery, null);
                 connected = false;
 
             }
