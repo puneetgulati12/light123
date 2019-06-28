@@ -13,6 +13,30 @@ public class lightclass{
         this.count = count;
     }
 
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public void setSatellite(String satellite) {
+        this.satellite = satellite;
+    }
+
+    public void setVis_median(String vis_median) {
+        this.vis_median = vis_median;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     public String getKey() {
         return key;
     }
@@ -36,5 +60,6 @@ public class lightclass{
     public int getCount() {
         return count;
     }
+
 }
 

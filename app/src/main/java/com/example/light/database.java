@@ -3,6 +3,7 @@ package com.example.light;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
@@ -14,11 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class database extends SQLiteOpenHelper {
+
+    private Context context;
+    public SQLiteDatabase db;
+
+    private database dbHelp;
     private static final String DATABASE_NAME = "LightDatabase";
     private static final int DATABASE_VERSION = 2;
     //table names
-    private static final String TABLE_KEY = "key2";
-    private static final String TABLE_SATELLITE = "Satellite";
+    public static final String TABLE_KEY = "key2";
+    public static final String TABLE_SATELLITE = "Satellite";
 
 //table columns
     private static final String TABLE_KEY_ID = "district";
@@ -30,7 +36,7 @@ public class database extends SQLiteOpenHelper {
     private static final String KEY_SAT_COU = "count";
     private static final String KEY_SAT_YEAR = "Year";
     private static final String TAG = "";
-    private static final String _ID = "ID";
+    public static final String _ID = "ID";
 
 
     private static database sInstance;
@@ -41,6 +47,15 @@ public class database extends SQLiteOpenHelper {
             sInstance = new database(context.getApplicationContext());
         }
         return sInstance;
+    }
+//    public SQLiteDatabase open(SQLiteDatabase dbhelp) throws SQLException {
+//
+//        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+//        return sqLiteDatabase;
+//    }
+
+    public void close() {
+        dbHelp.close();
     }
 
 
@@ -151,6 +166,38 @@ public class database extends SQLiteOpenHelper {
         return userId;
     }
 
+    public ArrayList<lightclass> getdata(){
+        // DataModel dataModel = new DataModel();
+        ArrayList<lightclass> data=new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        Cursor cursor = sqLiteDatabase.rawQuery("select * from Satellite" ,null);
+        StringBuffer stringBuffer = new StringBuffer();
+        lightclass dataModel = null;
+        while (cursor.moveToNext()) {
+            dataModel= new lightclass("key" , "satellite" , "vis_median" , 1993 , 3 , 3);
+            String count = cursor.getString(cursor.getColumnIndexOrThrow("count"));
+            String vismedian = cursor.getString(cursor.getColumnIndexOrThrow("VisMedian"));
+            String year = cursor.getString(cursor.getColumnIndexOrThrow("Year"));
+            String month = cursor.getString(cursor.getColumnIndexOrThrow("Month"));
+            dataModel.setCount(Integer.parseInt(count));
+            dataModel.setMonth(Integer.parseInt(month));
+            dataModel.setYear(Integer.parseInt(year));
+            dataModel.setVis_median(vismedian);
+            stringBuffer.append(dataModel);
+            // stringBuffer.append(dataModel);
+            data.add(dataModel);
+        }
+
+        for (lightclass mo:data ) {
+
+            Log.d("Hellomo",""+mo.getCount());
+        }
+
+        //
+
+        return data;
+    }
+
     public class Post {
         public User user;
         public String text;
@@ -232,6 +279,14 @@ public class database extends SQLiteOpenHelper {
         }
     }
 
-
+//    public Cursor fetch() {
+//        db = getWritableDatabase();
+//        String[] columns = new String[] { dbHelp._ID, dbHelp.TABLE_SATELLITE, dbHelp.TABLE_KEY };
+//        Cursor cursor = db.query(dbHelp.TABLE_SATELLITE, columns, null, null, null, null, null);
+//        if (cursor != null) {
+//            cursor.moveToFirst();
+//        }
+//        return cursor;
+//    }
 
 }

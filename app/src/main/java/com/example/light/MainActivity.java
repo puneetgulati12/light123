@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,6 +19,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,7 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<lightclass> data = new ArrayList<>();
     EditText editText;
-    private database dbhelper;
+    database database;
+    Lightadapter lightadapter;
+    private SQLiteDatabase d;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,22 +44,36 @@ public class MainActivity extends AppCompatActivity {
 
         final OkHttpClient httpClient = new OkHttpClient();
         final String baseurl = "http://api.nightlights.io/months/1993.3-1993.4/states/";
+
+
+        final database sqLiteDatabase = new database(this);
+
+        //Cursor cursor = sqLiteDatabase.fetch();
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 editText = findViewById(R.id.et);
                 String name = editText.getText().toString();
+
+
+
                 try {
                     run();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+
 //                Request request = new Request().Builder().url(baseurl + editText + "/districts").build();
 
 
             }
         });
-        getdata();
+
+        database  = new database(MainActivity.this);
+        data=  database.getdata();
+        lightadapter =new Lightadapter(data , MainActivity.this);
+
 
 //        RecyclerView rv = findViewById(R.id.recycler);
 //        rv.setLayoutManager(new LinearLayoutManager(this , LinearLayoutManager.HORIZONTAL ,false));
@@ -102,6 +118,9 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < arr.length; i++) {
                     insert(String.valueOf(arr[i].getMonth()), String.valueOf(arr[i].getCount()),
                             String.valueOf(arr[i].getVis_median()), String.valueOf(arr[i].getYear()));
+                }
+                for (int i = 0; i < arr.length; i++) {
+                    insert(String.valueOf(arr[i].getKey()), String.valueOf(arr[i].getSatellite()));
                 }
 
                 MainActivity.this.runOnUiThread(new Runnable() {
@@ -151,43 +170,29 @@ public class MainActivity extends AppCompatActivity {
            // Toast.makeText(this, "The new Row Id is " + newRow, Toast.LENGTH_LONG).show();
             return true;
         }
-
-        public void getdata () {
-
-
-//        final String TABLE_NAME = "";
-//
-//        String selectquery = "SELECT * FROM TABLE_KEY , TABLE_SATELLITE" ;
-//        SQLiteDatabase sqLiteDatabase = database.getInstance(this).getReadableDatabase();
-//            Cursor cursor = sqLiteDatabase.rawQuery(selectquery, null);
-//            String data[] = null;
-//
-//            if (cursor.moveToFirst()){
-//
-//            }
-//
-//            return  data;
+        public void offline(){
             boolean connected = false;
             ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
             if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                     connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
                 //we are connected to a network
-                try {
-                    run();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
                 connected = true;
 
             } else {
                 String selectquery = "SELECT * FROM TABLE_KEY , TABLE_SATELLITE" ;
-        SQLiteDatabase sqLiteDatabase = database.getInstance(this).getReadableDatabase();
-            Cursor cursor = sqLiteDatabase.rawQuery(selectquery, null);
+                SQLiteDatabase sqLiteDatabase = database.getInstance(this).getReadableDatabase();
+                Cursor cursor = sqLiteDatabase.rawQuery(selectquery, null);
                 connected = false;
 
             }
+        }
+
+
 
 
         }
-    }
+
+
+
 
