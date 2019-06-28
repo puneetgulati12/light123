@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
             connected = true;
 
         } else {
-            String selectquery = "SELECT * FROM Satellite INNER JOIN key2 where Satellite.rowid = key2.ID AND  key2.district like 'haryana%'";
+            String selectquery = "SELECT * FROM Satellite INNER JOIN key2 where Satellite.rowid = key2.ID AND  key2.district like 'delhi%' group by key2.district";
             SQLiteDatabase sqLiteDatabase = database.getInstance(this).getReadableDatabase();
             Cursor cursor = sqLiteDatabase.rawQuery(selectquery, null);
             connected = false;
