@@ -56,13 +56,12 @@ public class MainActivity extends AppCompatActivity {
                 String name = editText.getText().toString();
 
 
-
-                try {
-                    run();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+//                try {
+//                    run();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+                offline();
 
 //                Request request = new Request().Builder().url(baseurl + editText + "/districts").build();
 
@@ -70,9 +69,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        database  = new database(MainActivity.this);
-        data=  database.getdata();
-        lightadapter =new Lightadapter(data , MainActivity.this);
+        database = new database(MainActivity.this);
+        data = database.getdata();
+        lightadapter = new Lightadapter(data, MainActivity.this);
 
 
 //        RecyclerView rv = findViewById(R.id.recycler);
@@ -107,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
 //                final String result = response.body().string();
                 String resut = myResponse;
                 Gson gson = new Gson();
-
 
 
 //                Type listType = new TypeToken<>().getType();
@@ -145,54 +143,83 @@ public class MainActivity extends AppCompatActivity {
 //    SQLiteDatabase sqLiteDatabase = database.getInstance(this).getWritableDatabase();
         SQLiteDatabase sqLiteDatabase = new database(this).getWritableDatabase();
 
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("Month", Month);
-            contentValues.put("Year", Year);
-            contentValues.put("count", count);
-            contentValues.put("vismedian", VisMedian);
-            long newRow = sqLiteDatabase.insert("satellite", null, contentValues);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("Month", Month);
+        contentValues.put("Year", Year);
+        contentValues.put("count", count);
+        contentValues.put("vismedian", VisMedian);
+        long newRow = sqLiteDatabase.insert("satellite", null, contentValues);
 
 //            contentValues.put("" , );
 //            sqLiteDatabase.insert("key2" , null , contentValues);
-           // Toast.makeText(this, "The new Row Id is " + newRow, Toast.LENGTH_LONG).show();
-            return true;
-        }
+        // Toast.makeText(this, "The new Row Id is " + newRow, Toast.LENGTH_LONG).show();
+        return true;
+    }
 
-        public boolean insert(String district, String value) {
+    public boolean insert(String district, String value) {
 //    SQLiteDatabase sqLiteDatabase = database.getInstance(this).getWritableDatabase();
         SQLiteDatabase sqLiteDatabase = new database(this).getWritableDatabase();
 
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("district", district);
-            contentValues.put("value", value);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("district", district);
+        contentValues.put("value", value);
 
-            sqLiteDatabase.insert("key2" , null , contentValues);
-           // Toast.makeText(this, "The new Row Id is " + newRow, Toast.LENGTH_LONG).show();
-            return true;
-        }
-        public void offline(){
-            boolean connected = false;
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
-            if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                    connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
-                //we are connected to a network
+        sqLiteDatabase.insert("key2", null, contentValues);
+        // Toast.makeText(this, "The new Row Id is " + newRow, Toast.LENGTH_LONG).show();
+        return true;
+    }
 
-                connected = true;
-
-            } else {
-                String selectquery = "SELECT * FROM TABLE_KEY , TABLE_SATELLITE" ;
-                SQLiteDatabase sqLiteDatabase = database.getInstance(this).getReadableDatabase();
-                Cursor cursor = sqLiteDatabase.rawQuery(selectquery, null);
-                connected = false;
-
+    public void offline() {
+        boolean connected = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            try {
+                run();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            connected = true;
+
+        } else {
+            String selectquery = "SELECT * FROM Satellite INNER JOIN key2 where Satellite.rowid = key2.ID AND  key2.district like 'haryana%'";
+            SQLiteDatabase sqLiteDatabase = database.getInstance(this).getReadableDatabase();
+            Cursor cursor = sqLiteDatabase.rawQuery(selectquery, null);
+            connected = false;
+
+            ArrayList<lightclass> data = new ArrayList<>();
+
+
+            StringBuffer stringBuffer = new StringBuffer();
+            lightclass dataModel = null;
+            while (cursor.moveToNext()) {
+                try {
+                    dataModel = new lightclass("key", "satellite", "vis_median", 1993, 3, 3);
+                    String count = cursor.getString(cursor.getColumnIndexOrThrow("count"));
+                    String vismedian = cursor.getString(cursor.getColumnIndexOrThrow("VisMedian"));
+                    String year = cursor.getString(cursor.getColumnIndexOrThrow("Year"));
+                    String month = cursor.getString(cursor.getColumnIndexOrThrow("Month"));
+                    dataModel.setCount(Integer.parseInt(count));
+                    dataModel.setMonth(Integer.parseInt(month));
+                    dataModel.setYear(Integer.parseInt(year));
+                    dataModel.setVis_median(vismedian);
+                    stringBuffer.append(dataModel);
+                    // stringBuffer.append(dataModel);
+                    data.add(dataModel);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            for (lightclass mo : data) {
+
+                Log.d("Hellomo", "" + mo.getCount());
+            }
+
+
         }
 
 
-
-
-        }
-
-
-
-
+    }
+}
