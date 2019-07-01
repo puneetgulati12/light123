@@ -50,6 +50,7 @@ View inflatedView = li.inflate(R.layout.item_row , parent ,false);
         holder.mon.setText(String.valueOf(current.getMonth()));
         holder.year.setText(String.valueOf(current.getYear()));
 
+
     }
 
     @Override
@@ -58,7 +59,7 @@ View inflatedView = li.inflate(R.layout.item_row , parent ,false);
         return lightclass.size();
     }
 class LightHolder extends  RecyclerView.ViewHolder{
-        private TextView sat , cou , vis ,mon , year ;
+        private TextView sat , cou , vis ,mon , year, dial ;
 
 
     public LightHolder(View itemView) {
@@ -69,7 +70,7 @@ class LightHolder extends  RecyclerView.ViewHolder{
             vis = itemView.findViewById(R.id.vis_median);
             mon = itemView.findViewById(R.id.mon);
             year = itemView.findViewById(R.id.year);
-
+            dial = itemView.findViewById(R.id.dial);
     }
 }
 

@@ -55,6 +55,7 @@ public class database extends SQLiteOpenHelper {
 //    }
 
     public void close() {
+
         dbHelp.close();
     }
 

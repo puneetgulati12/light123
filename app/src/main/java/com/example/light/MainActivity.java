@@ -2,6 +2,7 @@ package com.example.light;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
@@ -9,12 +10,11 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,7 +23,6 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -44,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+       Button dial =  findViewById(R.id.dial);
 
 
         final OkHttpClient httpClient = new OkHttpClient();
@@ -76,6 +76,23 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        dial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this , Main2Activity.class);
+                intent.putExtra("key", "value");
+                startActivity(intent);
+
+
+            }
+        });
+
+
+
+
+
+
 
         database = new database(MainActivity.this);
         data = database.getdata();
@@ -231,11 +248,12 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d("Hellomo", "" + mo.getCount());
             }
-            //recyclerView.addItemDecoration(new DividerItemDecoration(getBaseContext(),LinearLayoutManager.VERTICAL));
+
 
 
         }
 
 
     }
+
 }
