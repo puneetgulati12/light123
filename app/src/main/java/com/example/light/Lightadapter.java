@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,7 @@ View inflatedView = li.inflate(R.layout.item_row , parent ,false);
         holder.vis.setText(String.valueOf(current.getVis_median()));
         holder.mon.setText(String.valueOf(current.getMonth()));
         holder.year.setText(String.valueOf(current.getYear()));
+
     }
 
     @Override
@@ -57,6 +59,8 @@ View inflatedView = li.inflate(R.layout.item_row , parent ,false);
     }
 class LightHolder extends  RecyclerView.ViewHolder{
         private TextView sat , cou , vis ,mon , year ;
+
+
     public LightHolder(View itemView) {
             super(itemView);
 
@@ -65,6 +69,7 @@ class LightHolder extends  RecyclerView.ViewHolder{
             vis = itemView.findViewById(R.id.vis_median);
             mon = itemView.findViewById(R.id.mon);
             year = itemView.findViewById(R.id.year);
+
     }
 }
 

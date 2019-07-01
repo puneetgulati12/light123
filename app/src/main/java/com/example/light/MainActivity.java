@@ -1,6 +1,7 @@
 package com.example.light;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
@@ -8,9 +9,12 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 editText = findViewById(R.id.et);
                 String name = editText.getText().toString();
+                InputMethodManager input = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                input.hideSoftInputFromWindow(getCurrentFocus().getWindowToken() , InputMethodManager.HIDE_NOT_ALWAYS);
 
 
 //                try {
@@ -62,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 //                    e.printStackTrace();
 //                }
                 offline();
+
 
 //                Request request = new Request().Builder().url(baseurl + editText + "/districts").build();
 
@@ -183,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
             connected = true;
 
         } else {
-            String selectquery = "SELECT * FROM Satellite INNER JOIN key2 where Satellite.rowid = key2.ID AND  key2.district like 'delhi%' group by key2.district";
+            String Text = editText.getText().toString();
+            String selectquery = "SELECT * FROM Satellite INNER JOIN key2 where Satellite.rowid = key2.ID AND  key2.district like '" + Text +"%' group by key2.district";
             SQLiteDatabase sqLiteDatabase = database.getInstance(this).getReadableDatabase();
             Cursor cursor = sqLiteDatabase.rawQuery(selectquery, null);
             connected = false;
@@ -212,10 +221,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+
+            Lightadapter Myadapter = new Lightadapter(data , this);
+            RecyclerView recyclerView = findViewById(R.id.recycler);
+            recyclerView.setLayoutManager((new LinearLayoutManager(MainActivity.this.getBaseContext())));
+            recyclerView.setAdapter(Myadapter);
+
             for (lightclass mo : data) {
 
                 Log.d("Hellomo", "" + mo.getCount());
             }
+            //recyclerView.addItemDecoration(new DividerItemDecoration(getBaseContext(),LinearLayoutManager.VERTICAL));
 
 
         }

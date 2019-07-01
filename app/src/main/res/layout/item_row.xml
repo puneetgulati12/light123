@@ -41,7 +41,17 @@
                     android:id="@+id/year"
                     android:textSize="12sp"
                     android:text="Year" />
-                <!--<Button-->
+                <View
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:background="@color/gray"/>
+
+                <!--<view-->
+                    <!--android:layout_width="104dp"-->
+                    <!--android:layout_height="20dp"-->
+                    <!--android:id="@+id/testview"-->
+                    <!--and/>                &lt;!&ndash;<Button&ndash;&gt;-->
                     <!--android:text="dial"-->
                     <!--android:id="@+id/callon"-->
                     <!--android:layout_width="wrap_content"-->
